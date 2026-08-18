@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -43,6 +44,7 @@ fun TasksScreen(viewModel: TasksViewModel = viewModel()) {
     val tasks by viewModel.tasks.collectAsState()
     val totalPoints by viewModel.totalPoints.collectAsState()
     var showAddDialog by remember { mutableStateOf(false) }
+    var editingTask by remember { mutableStateOf<Task?>(null) }
 
     Scaffold(
         topBar = {
@@ -85,6 +87,7 @@ fun TasksScreen(viewModel: TasksViewModel = viewModel()) {
                     TaskRow(
                         task = task,
                         onComplete = { viewModel.completeTask(task) },
+                        onEdit = { editingTask = task },
                         onDelete = { viewModel.deleteTask(task) }
                     )
                 }
@@ -93,7 +96,9 @@ fun TasksScreen(viewModel: TasksViewModel = viewModel()) {
     }
 
     if (showAddDialog) {
-        AddTaskDialog(
+        TaskDialog(
+            dialogTitle = "New Task",
+            confirmLabel = "Add",
             onDismiss = { showAddDialog = false },
             onConfirm = { title, points ->
                 viewModel.addTask(title, points)
@@ -101,10 +106,24 @@ fun TasksScreen(viewModel: TasksViewModel = viewModel()) {
             }
         )
     }
+
+    editingTask?.let { task ->
+        TaskDialog(
+            dialogTitle = "Edit Task",
+            confirmLabel = "Save",
+            initialTitle = task.title,
+            initialPoints = task.points.toString(),
+            onDismiss = { editingTask = null },
+            onConfirm = { title, points ->
+                viewModel.updateTask(task, title, points)
+                editingTask = null
+            }
+        )
+    }
 }
 
 @Composable
-private fun TaskRow(task: Task, onComplete: () -> Unit, onDelete: () -> Unit) {
+private fun TaskRow(task: Task, onComplete: () -> Unit, onEdit: () -> Unit, onDelete: () -> Unit) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
@@ -116,6 +135,9 @@ private fun TaskRow(task: Task, onComplete: () -> Unit, onDelete: () -> Unit) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(task.title, fontWeight = FontWeight.SemiBold)
                 Text("${task.points} pts")
+            }
+            IconButton(onClick = onEdit) {
+                Icon(Icons.Filled.Edit, contentDescription = "Edit task")
             }
             IconButton(onClick = onComplete) {
                 Icon(Icons.Filled.CheckCircle, contentDescription = "Complete task")
@@ -129,15 +151,22 @@ private fun TaskRow(task: Task, onComplete: () -> Unit, onDelete: () -> Unit) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AddTaskDialog(onDismiss: () -> Unit, onConfirm: (String, Int) -> Unit) {
-    var title by remember { mutableStateOf("") }
-    var points by remember { mutableStateOf("") }
+private fun TaskDialog(
+    dialogTitle: String,
+    confirmLabel: String,
+    initialTitle: String = "",
+    initialPoints: String = "",
+    onDismiss: () -> Unit,
+    onConfirm: (String, Int) -> Unit
+) {
+    var title by remember { mutableStateOf(initialTitle) }
+    var points by remember { mutableStateOf(initialPoints) }
     val pointsValue = points.toIntOrNull()
     val isValid = title.isNotBlank() && pointsValue != null && pointsValue > 0
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("New Task") },
+        title = { Text(dialogTitle) },
         text = {
             Column {
                 OutlinedTextField(
@@ -159,7 +188,7 @@ private fun AddTaskDialog(onDismiss: () -> Unit, onConfirm: (String, Int) -> Uni
             TextButton(
                 onClick = { if (isValid) onConfirm(title.trim(), pointsValue!!) },
                 enabled = isValid
-            ) { Text("Add") }
+            ) { Text(confirmLabel) }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) { Text("Cancel") }

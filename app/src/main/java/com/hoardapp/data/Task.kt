@@ -6,6 +6,7 @@ import androidx.room.Entity
 import androidx.room.Insert
 import androidx.room.PrimaryKey
 import androidx.room.Query
+import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 @Entity(tableName = "tasks")
@@ -23,6 +24,9 @@ interface TaskDao {
 
     @Insert
     suspend fun insert(task: Task): Long
+
+    @Update
+    suspend fun update(task: Task)
 
     @Delete
     suspend fun delete(task: Task)

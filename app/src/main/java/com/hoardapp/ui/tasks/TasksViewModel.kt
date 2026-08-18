@@ -24,6 +24,10 @@ class TasksViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch { repository.addTask(title, points) }
     }
 
+    fun updateTask(task: Task, title: String, points: Int) {
+        viewModelScope.launch { repository.updateTask(task.copy(title = title, points = points)) }
+    }
+
     fun completeTask(task: Task) {
         viewModelScope.launch { repository.completeTask(task) }
     }

@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Redeem
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -48,6 +49,7 @@ fun RewardsScreen(viewModel: RewardsViewModel = viewModel()) {
     val rewards by viewModel.rewards.collectAsState()
     val totalPoints by viewModel.totalPoints.collectAsState()
     var showAddDialog by remember { mutableStateOf(false) }
+    var editingReward by remember { mutableStateOf<Reward?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -99,6 +101,7 @@ fun RewardsScreen(viewModel: RewardsViewModel = viewModel()) {
                     RewardRow(
                         reward = reward,
                         onRedeem = { viewModel.redeemReward(reward) },
+                        onEdit = { editingReward = reward },
                         onDelete = { viewModel.deleteReward(reward) }
                     )
                 }
@@ -107,7 +110,9 @@ fun RewardsScreen(viewModel: RewardsViewModel = viewModel()) {
     }
 
     if (showAddDialog) {
-        AddRewardDialog(
+        RewardDialog(
+            dialogTitle = "New Reward",
+            confirmLabel = "Add",
             onDismiss = { showAddDialog = false },
             onConfirm = { title, cost ->
                 viewModel.addReward(title, cost)
@@ -115,10 +120,24 @@ fun RewardsScreen(viewModel: RewardsViewModel = viewModel()) {
             }
         )
     }
+
+    editingReward?.let { reward ->
+        RewardDialog(
+            dialogTitle = "Edit Reward",
+            confirmLabel = "Save",
+            initialTitle = reward.title,
+            initialCost = reward.cost.toString(),
+            onDismiss = { editingReward = null },
+            onConfirm = { title, cost ->
+                viewModel.updateReward(reward, title, cost)
+                editingReward = null
+            }
+        )
+    }
 }
 
 @Composable
-private fun RewardRow(reward: Reward, onRedeem: () -> Unit, onDelete: () -> Unit) {
+private fun RewardRow(reward: Reward, onRedeem: () -> Unit, onEdit: () -> Unit, onDelete: () -> Unit) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
@@ -130,6 +149,9 @@ private fun RewardRow(reward: Reward, onRedeem: () -> Unit, onDelete: () -> Unit
             Column(modifier = Modifier.weight(1f)) {
                 Text(reward.title, fontWeight = FontWeight.SemiBold)
                 Text("${reward.cost} pts")
+            }
+            IconButton(onClick = onEdit) {
+                Icon(Icons.Filled.Edit, contentDescription = "Edit reward")
             }
             IconButton(onClick = onRedeem) {
                 Icon(Icons.Filled.Redeem, contentDescription = "Redeem reward")
@@ -143,15 +165,22 @@ private fun RewardRow(reward: Reward, onRedeem: () -> Unit, onDelete: () -> Unit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun AddRewardDialog(onDismiss: () -> Unit, onConfirm: (String, Int) -> Unit) {
-    var title by remember { mutableStateOf("") }
-    var cost by remember { mutableStateOf("") }
+private fun RewardDialog(
+    dialogTitle: String,
+    confirmLabel: String,
+    initialTitle: String = "",
+    initialCost: String = "",
+    onDismiss: () -> Unit,
+    onConfirm: (String, Int) -> Unit
+) {
+    var title by remember { mutableStateOf(initialTitle) }
+    var cost by remember { mutableStateOf(initialCost) }
     val costValue = cost.toIntOrNull()
     val isValid = title.isNotBlank() && costValue != null && costValue > 0
 
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text("New Reward") },
+        title = { Text(dialogTitle) },
         text = {
             Column {
                 OutlinedTextField(
@@ -173,7 +202,7 @@ private fun AddRewardDialog(onDismiss: () -> Unit, onConfirm: (String, Int) -> U
             TextButton(
                 onClick = { if (isValid) onConfirm(title.trim(), costValue!!) },
                 enabled = isValid
-            ) { Text("Add") }
+            ) { Text(confirmLabel) }
         },
         dismissButton = {
             TextButton(onClick = onDismiss) { Text("Cancel") }

@@ -10,7 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -102,11 +102,12 @@ fun ProfileScreen(viewModel: ProfileViewModel = viewModel()) {
     if (target != null) {
         AlertDialog(
             onDismissRequest = { pendingRemoval = null },
-            title = { Text("Remove redeemed reward?") },
+            title = { Text("Mark as claimed?") },
             text = {
                 Text(
-                    "\"${target.rewardTitle}\" will be removed and " +
-                        "${target.cost} points will be refunded."
+                    "This removes \"${target.rewardTitle}\" from your redeemed rewards. " +
+                        "Its ${target.cost} points stay spent — only do this once you've " +
+                        "actually claimed the reward."
                 )
             },
             confirmButton = {
@@ -138,7 +139,7 @@ private fun RedeemedRow(redeemed: RedeemedReward, onRemove: () -> Unit) {
                 Text("${redeemed.cost} pts · ${dateFormat.format(Date(redeemed.redeemedAt))}")
             }
             IconButton(onClick = onRemove) {
-                Icon(Icons.Filled.Delete, contentDescription = "Remove redeemed reward")
+                Icon(Icons.Filled.CheckCircle, contentDescription = "Mark redeemed reward as claimed")
             }
         }
     }

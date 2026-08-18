@@ -19,6 +19,10 @@ class HoardRepository(private val db: AppDatabase) {
         taskDao.insert(Task(title = title, points = points))
     }
 
+    suspend fun updateTask(task: Task) {
+        taskDao.update(task)
+    }
+
     suspend fun deleteTask(task: Task) {
         taskDao.delete(task)
     }
@@ -33,6 +37,10 @@ class HoardRepository(private val db: AppDatabase) {
 
     suspend fun addReward(title: String, cost: Int) {
         rewardDao.insert(Reward(title = title, cost = cost))
+    }
+
+    suspend fun updateReward(reward: Reward) {
+        rewardDao.update(reward)
     }
 
     suspend fun deleteReward(reward: Reward) {
@@ -55,12 +63,11 @@ class HoardRepository(private val db: AppDatabase) {
         }
     }
 
-    /** Removes a redeemed reward entry and refunds its points to the balance. */
+    /**
+     * Clears a redeemed reward from the profile once it's actually been claimed in real life.
+     * Points were already spent at redemption time, so this does not refund them.
+     */
     suspend fun removeRedeemedReward(redeemed: RedeemedReward) {
-        db.withTransaction {
-            val profile = profileDao.get() ?: Profile()
-            profileDao.upsert(profile.copy(totalPoints = profile.totalPoints + redeemed.cost))
-            redeemedRewardDao.delete(redeemed)
-        }
+        redeemedRewardDao.delete(redeemed)
     }
 }

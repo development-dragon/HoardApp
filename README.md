@@ -1,6 +1,6 @@
 # Hoard
 
-An Android task/reward points app. Create your own tasks and rewards on the fly, earn points by completing tasks, and redeem points for rewards. Your profile shows your available point balance and redemption history, and any redeemed reward can be removed (refunding its points).
+An Android task/reward points app. Create your own tasks and rewards on the fly, earn points by completing tasks, and redeem points for rewards. Your profile shows your available point balance and redemption history, and lets you clear a redeemed reward off the list once you've actually claimed it.
 
 ## Stack
 
@@ -11,9 +11,9 @@ An Android task/reward points app. Create your own tasks and rewards on the fly,
 
 ## How it works
 
-- **Tasks tab** — add tasks with a name and point value. Tap the check icon to complete a task and add its points to your balance (the task stays so you can reuse it). Tap the trash icon to delete a task type entirely.
-- **Rewards tab** — add rewards with a name and point cost. Tap the redeem icon to spend points on a reward; if you don't have enough points you'll see a message and nothing is deducted. Tap the trash icon to delete a reward type.
-- **Profile tab** — shows your total available points and your redemption history. Tap the trash icon on a redeemed reward to remove it, which refunds its points back to your balance.
+- **Tasks tab** — add tasks with a name and point value. Tap the pencil icon to edit a task's name/points, the check icon to complete it and add its points to your balance (the task stays so you can reuse it), or the trash icon to delete it entirely.
+- **Rewards tab** — add rewards with a name and point cost. Tap the pencil icon to edit a reward, the redeem icon to spend points on it (if you don't have enough points you'll see a message and nothing is deducted), or the trash icon to delete the reward type.
+- **Profile tab** — shows your total available points and your redemption history. Points are spent as soon as you redeem a reward on the Rewards tab. Once you've actually claimed a redeemed reward in real life, tap its check icon here to clear it from the list — its points stay spent; this doesn't refund them.
 
 ## Getting the APK on your phone (no computer needed)
 

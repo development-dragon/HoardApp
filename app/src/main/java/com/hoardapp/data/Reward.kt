@@ -6,6 +6,7 @@ import androidx.room.Entity
 import androidx.room.Insert
 import androidx.room.PrimaryKey
 import androidx.room.Query
+import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
 @Entity(tableName = "rewards")
@@ -23,6 +24,9 @@ interface RewardDao {
 
     @Insert
     suspend fun insert(reward: Reward): Long
+
+    @Update
+    suspend fun update(reward: Reward)
 
     @Delete
     suspend fun delete(reward: Reward)

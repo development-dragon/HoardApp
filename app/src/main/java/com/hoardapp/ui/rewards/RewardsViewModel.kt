@@ -29,6 +29,10 @@ class RewardsViewModel(application: Application) : AndroidViewModel(application)
         viewModelScope.launch { repository.addReward(title, cost) }
     }
 
+    fun updateReward(reward: Reward, title: String, cost: Int) {
+        viewModelScope.launch { repository.updateReward(reward.copy(title = title, cost = cost)) }
+    }
+
     fun deleteReward(reward: Reward) {
         viewModelScope.launch { repository.deleteReward(reward) }
     }
