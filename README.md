@@ -15,9 +15,19 @@ An Android task/reward points app. Create your own tasks and rewards on the fly,
 - **Rewards tab** — add rewards with a name and point cost. Tap the redeem icon to spend points on a reward; if you don't have enough points you'll see a message and nothing is deducted. Tap the trash icon to delete a reward type.
 - **Profile tab** — shows your total available points and your redemption history. Tap the trash icon on a redeemed reward to remove it, which refunds its points back to your balance.
 
-## Building the app
+## Getting the APK on your phone (no computer needed)
 
-This project was scaffolded in a sandboxed environment without access to the Android SDK or Google's Maven repository, so the build could not be verified end-to-end here. To build it:
+Every push to `claude/android-task-reward-app-ff86pp` runs `.github/workflows/android-build.yml`, which builds a debug APK on GitHub's servers and publishes it to a release tag called **`debug-latest`**:
+
+1. From your phone, open `https://github.com/development-dragon/HoardApp/releases/tag/debug-latest`.
+2. Download the `.apk` asset directly (no zip to extract).
+3. Open the downloaded file to install it — Android will prompt you to allow "install unknown apps" for your browser or Files app the first time.
+
+You can also trigger a build manually anytime from the **Actions** tab (works fine from the GitHub mobile app or mobile browser) using the "Run workflow" button on the "Build debug APK" workflow — useful if you want a fresh build without pushing a new commit. If the release step ever fails (e.g. Actions lacks write permission on the repo), the same APK is still available as a workflow run artifact under the Actions tab, just zipped.
+
+## Building the app locally (optional)
+
+This project was scaffolded in a sandboxed environment without access to the Android SDK or Google's Maven repository, so the build could not be verified end-to-end there — CI (above) is the verified build path. To build locally instead:
 
 1. Open the project folder in Android Studio (Koala/2024.1 or newer recommended), or run from the command line:
    ```
