@@ -41,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hoardapp.data.Reward
+import com.hoardapp.ui.components.ConfirmDialog
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,6 +51,7 @@ fun RewardsScreen(viewModel: RewardsViewModel = viewModel()) {
     val totalPoints by viewModel.totalPoints.collectAsState()
     var showAddDialog by remember { mutableStateOf(false) }
     var editingReward by remember { mutableStateOf<Reward?>(null) }
+    var deletingReward by remember { mutableStateOf<Reward?>(null) }
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
@@ -102,7 +104,7 @@ fun RewardsScreen(viewModel: RewardsViewModel = viewModel()) {
                         reward = reward,
                         onRedeem = { viewModel.redeemReward(reward) },
                         onEdit = { editingReward = reward },
-                        onDelete = { viewModel.deleteReward(reward) }
+                        onDelete = { deletingReward = reward }
                     )
                 }
             }
@@ -131,6 +133,18 @@ fun RewardsScreen(viewModel: RewardsViewModel = viewModel()) {
             onConfirm = { title, cost ->
                 viewModel.updateReward(reward, title, cost)
                 editingReward = null
+            }
+        )
+    }
+
+    deletingReward?.let { reward ->
+        ConfirmDialog(
+            title = "Delete reward?",
+            text = "\"${reward.title}\" will be permanently deleted.",
+            onDismiss = { deletingReward = null },
+            onConfirm = {
+                viewModel.deleteReward(reward)
+                deletingReward = null
             }
         )
     }

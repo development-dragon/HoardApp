@@ -37,6 +37,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.hoardapp.data.Task
+import com.hoardapp.ui.components.ConfirmDialog
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,6 +46,7 @@ fun TasksScreen(viewModel: TasksViewModel = viewModel()) {
     val totalPoints by viewModel.totalPoints.collectAsState()
     var showAddDialog by remember { mutableStateOf(false) }
     var editingTask by remember { mutableStateOf<Task?>(null) }
+    var deletingTask by remember { mutableStateOf<Task?>(null) }
 
     Scaffold(
         topBar = {
@@ -88,7 +90,7 @@ fun TasksScreen(viewModel: TasksViewModel = viewModel()) {
                         task = task,
                         onComplete = { viewModel.completeTask(task) },
                         onEdit = { editingTask = task },
-                        onDelete = { viewModel.deleteTask(task) }
+                        onDelete = { deletingTask = task }
                     )
                 }
             }
@@ -117,6 +119,18 @@ fun TasksScreen(viewModel: TasksViewModel = viewModel()) {
             onConfirm = { title, points ->
                 viewModel.updateTask(task, title, points)
                 editingTask = null
+            }
+        )
+    }
+
+    deletingTask?.let { task ->
+        ConfirmDialog(
+            title = "Delete task?",
+            text = "\"${task.title}\" will be permanently deleted.",
+            onDismiss = { deletingTask = null },
+            onConfirm = {
+                viewModel.deleteTask(task)
+                deletingTask = null
             }
         )
     }
